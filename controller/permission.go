@@ -1,0 +1,73 @@
+package controller
+
+import (
+	"go_web/model"
+	"go_web/service"
+	"go_web/util"
+	"net/http"
+	"strconv"
+
+	"github.com/astaxie/beego/validation"
+	"github.com/gin-gonic/gin"
+)
+
+// 获取权限列表
+func PermissionList(c *gin.Context) {
+	ps := service.PermissionService{}
+	list := ps.List()
+	if list == nil {
+		util.Response(c, http.StatusBadRequest, 400, "查询错误", "")
+	}
+	util.Response(c, http.StatusOK, 200, "查询成功", list)
+}
+
+// 添加权限
+func AddPermission(c *gin.Context) {
+	var data = model.Permission{}
+	if err := c.BindJSON(&data); err != nil {
+		util.Response(c, http.StatusBadRequest, 400, "参数错误", "")
+		return
+	}
+	valid := validation.Validation{}
+	valid.Required(data.Name, "name").Message("权限名称必须填")
+	valid.Required(data.Path, "path").Message("权路径必须填")
+	valid.Required(data.Method, "method").Message("请求方法必须填")
+	if valid.HasErrors() {
+		util.Response(c, http.StatusBadRequest, 400, valid.Errors[0].Message, "")
+		return
+	}
+	ps := service.PermissionService{}
+	isExist, err := ps.Check(data.Name)
+	if err != nil {
+		util.Response(c, http.StatusBadRequest, 400, "数据库错误", "")
+		return
+	}
+	if isExist {
+		util.Response(c, http.StatusBadRequest, 400, "权限已存在", "")
+		return
+	}
+	if err = ps.Add(&data); err != nil {
+		util.Response(c, http.StatusBadRequest, 400, "创建权限错误", "")
+	}
+	util.Response(c, http.StatusOK, 201, "创建成功", "")
+
+}
+
+// 修改权限
+func UpdatePermission(c *gin.Context) {
+	permissionID, err := strconv.ParseUint(c.Param("permission_id"), 10, 64)
+	if err != nil {
+		util.Response(c, http.StatusBadRequest, 400, "参数错误", "")
+	}
+	var data = model.Permission{}
+	if err := c.BindJSON(&data); err != nil {
+		util.Response(c, http.StatusBadRequest, 400, "参数错误", "")
+		return
+	}
+	ps := service.PermissionService{}
+	if !(ps.Update(permissionID, &data)) {
+		util.Response(c, http.StatusBadRequest, 400, "修改权限错误", "")
+	}
+	util.Response(c, http.StatusOK, 200, "修改权限成功", "")
+
+}
