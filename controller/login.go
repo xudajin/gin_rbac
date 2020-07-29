@@ -20,7 +20,6 @@ func LoginController(c *gin.Context) {
 		util.Response(c, http.StatusOK, 400, "参数错误", "")
 		return
 	}
-
 	user := model.User{}
 	if err := model.DB.Where("name=?", login.Name).Find(&user).Error; err != nil {
 		util.Response(c, http.StatusBadRequest, 400, "用户名错误", "")
@@ -34,7 +33,6 @@ func LoginController(c *gin.Context) {
 			return
 		}
 		// 签发Token
-
 		token, err := util.GenerateToken(user.Name)
 		if err != nil {
 			util.Response(c, http.StatusBadRequest, 400, "签发Token错误", "")
