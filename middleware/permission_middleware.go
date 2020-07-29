@@ -10,16 +10,15 @@ import (
 
 func Permission() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
-		requestMethod := c.Request.Method
-		requestUrl := c.FullPath()
+		requestMethod := c.Request.Method // 获取当前请求方法
+		requestURL := c.FullPath()        // 获取当前请求路径
 		// 获取当前访问用户的权限
 		name, ok := c.Get("username")
 		if !ok {
 			util.Response(c, http.StatusForbidden, 403, "访问失败", "")
 		}
 
-		role, err := model.QueryPermissionByUserName(name.(string))
+		role, err := model.QueryPermissionByUserName(name.(string)) //类型断言
 		if err != nil {
 			util.Response(c, http.StatusForbidden, 403, "没有访问权限", "")
 			c.Abort()
@@ -28,7 +27,7 @@ func Permission() gin.HandlerFunc {
 		// 判断权限是否通过
 		var allowRequest bool = false
 		for _, permission := range role.Permissions {
-			if permission.Path == requestUrl {
+			if permission.Path == requestURL {
 				if permission.Method == requestMethod {
 					allowRequest = true
 				}
@@ -42,6 +41,5 @@ func Permission() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
 	}
 }

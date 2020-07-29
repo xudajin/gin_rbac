@@ -5,7 +5,7 @@ type Permission struct {
 	Name   string  `gorm:"not null;unique" json:"name"`
 	Path   string  `json:"path"`
 	Method string  `json:"method"`
-	Roles  []*Role `gorm:"many2many:role_permission" json:"role"`
+	Roles  []*Role `gorm:"many2many:role_permission" json:"role,omitempty"` // 当字段为空，忽略该字段
 }
 
 // 查看权限名是否存在

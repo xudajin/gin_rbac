@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Login struct {
@@ -21,16 +22,28 @@ func LoginController(c *gin.Context) {
 	}
 
 	user := model.User{}
-	if err := model.DB.Where("name=? AND password=?", login.Name, login.Password).Find(&user).Error; err != nil {
-		util.Response(c, http.StatusBadRequest, 400, "用户名或密码错误", "")
+	if err := model.DB.Where("name=?", login.Name).Find(&user).Error; err != nil {
+		util.Response(c, http.StatusBadRequest, 400, "用户名错误", "")
 		return
 	}
+	// 验证密码
 	if user.ID > 0 {
-		token, err := util.GenerateToken(user.Name, user.Password)
+		err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(login.Password))
+		if err != nil {
+			util.Response(c, http.StatusBadRequest, 400, "密码错误", "")
+			return
+		}
+		// 签发Token
+
+		token, err := util.GenerateToken(user.Name)
 		if err != nil {
 			util.Response(c, http.StatusBadRequest, 400, "签发Token错误", "")
+			return
 		}
 		util.Response(c, http.StatusOK, 200, "签发Token成功", token)
+		return
 	}
+	util.Response(c, http.StatusBadRequest, 400, "用户不存在", "")
+	return
 
 }

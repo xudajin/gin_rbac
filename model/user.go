@@ -1,5 +1,10 @@
 package model
 
+import (
+	"github.com/jinzhu/gorm"
+	"golang.org/x/crypto/bcrypt"
+)
+
 type User struct {
 	BaseModel
 	Name     string `grom:"not null" json:"name"`
@@ -60,4 +65,17 @@ func DeleteById(userId uint64) error {
 		return err
 	}
 	return nil
+}
+
+// 钩子
+func (u *User) BeforeCreate(scope *gorm.Scope) {
+	var err error
+	// 密码加密
+	newPwd, err := bcrypt.GenerateFromPassword([]byte(u.Password), 10)
+	if err != nil {
+		return
+	}
+	u.Password = string(newPwd)
+	return
+
 }
