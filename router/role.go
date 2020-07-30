@@ -2,12 +2,13 @@ package router
 
 import (
 	"go_web/controller"
+	"go_web/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
 func RoleRouter(r *gin.Engine) {
-	roleRouter := r.Group("/api/role")
+	roleRouter := r.Group("/api/role", middleware.Jwt(), middleware.Permission())
 	{
 		roleRouter.GET("/infos", controller.QueryRoles)
 		roleRouter.POST("/infos", controller.AddRole)

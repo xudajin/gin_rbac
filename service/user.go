@@ -29,8 +29,9 @@ func (us *UserService) Add(user *model.User) error {
 	return nil
 }
 
-func (us *UserService) QueryById(userId uint64) (*model.User, error) {
-	data, err := model.QueryUserById(userId)
+// 查询用户
+func (us *UserService) QueryByID(userID uint64) (*model.User, error) {
+	data, err := model.QueryUserById(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -38,8 +39,8 @@ func (us *UserService) QueryById(userId uint64) (*model.User, error) {
 }
 
 // 修改用户信息
-func (us *UserService) UpdateById(userId uint64, data *model.User) error {
-	err := model.UPdateById(userId, data)
+func (us *UserService) UpdateByID(userID uint64, data *model.User) error {
+	err := model.UPdateById(userID, data)
 	if err != nil {
 		return err
 	}

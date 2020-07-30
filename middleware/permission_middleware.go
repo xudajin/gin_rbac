@@ -17,21 +17,25 @@ func Permission() gin.HandlerFunc {
 		if !ok {
 			util.Response(c, http.StatusForbidden, 403, "访问失败", "")
 		}
-
-		role, err := model.QueryPermissionByUserName(name.(string)) //类型断言
-		if err != nil {
-			util.Response(c, http.StatusForbidden, 403, "没有访问权限", "")
-			c.Abort()
-			return
-		}
-		// 判断权限是否通过
-		var allowRequest bool = false
-		for _, permission := range role.Permissions {
-			if permission.Path == requestURL {
-				if permission.Method == requestMethod {
-					allowRequest = true
+		var allowRequest bool = false // 定义标志变量
+		// 判断是否是admin用户
+		if name == "admin" {
+			allowRequest = true
+		} else {
+			role, err := model.QueryPermissionByUserName(name.(string)) //类型断言
+			if err != nil {
+				util.Response(c, http.StatusForbidden, 403, "没有访问权限", "")
+				c.Abort()
+				return
+			}
+			for _, permission := range role.Permissions {
+				if permission.Path == requestURL {
+					if permission.Method == requestMethod {
+						allowRequest = true
+					}
 				}
 			}
+
 		}
 		// 判断是否允许访问
 		if allowRequest {

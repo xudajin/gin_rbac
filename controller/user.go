@@ -52,7 +52,7 @@ func QueryUserById(c *gin.Context) {
 		return
 	}
 	us := service.UserService{}
-	data, err := us.QueryById(userID)
+	data, err := us.QueryByID(userID)
 	if err != nil {
 		util.Response(c, http.StatusBadRequest, 400, "查询错误", "")
 		return
@@ -84,7 +84,7 @@ func UpdateById(c *gin.Context) {
 		return
 	}
 	us := service.UserService{}
-	err = us.UpdateById(userID, &data)
+	err = us.UpdateByID(userID, &data)
 	if err != nil {
 		util.Response(c, http.StatusBadRequest, 400, "修改用户错误", "")
 		return

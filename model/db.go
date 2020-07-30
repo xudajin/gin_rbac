@@ -5,6 +5,8 @@ import (
 	"log"
 	"time"
 
+	"go_web/config"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
@@ -12,7 +14,8 @@ import (
 var DB *gorm.DB
 
 func init() {
-	db, err := gorm.Open("mysql", "root:root@/go_web?charset=utf8&parseTime=True&loc=Local")
+	args := fmt.Sprintf("%s:%s@/go_web?charset=utf8&parseTime=True&loc=Local", config.DbName, config.DbPassword)
+	db, err := gorm.Open("mysql", args)
 	if err != nil {
 		log.Fatal("数据库连接错误", err)
 	}
