@@ -31,7 +31,7 @@ func (us *UserService) Add(user *model.User) error {
 
 // 查询用户
 func (us *UserService) QueryByID(userID uint64) (*model.User, error) {
-	data, err := model.QueryUserById(userID)
+	data, err := model.QueryUserByID(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -40,16 +40,24 @@ func (us *UserService) QueryByID(userID uint64) (*model.User, error) {
 
 // 修改用户信息
 func (us *UserService) UpdateByID(userID uint64, data *model.User) error {
-	err := model.UPdateById(userID, data)
+	err := model.UpdateByID(userID, data)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
+//修改用户密码
+func (us *UserService) ChangePassword(userID uint64, data *model.User) bool {
+	if !(model.ChangePassword(userID, data)) {
+		return false
+	}
+	return true
+}
+
 // 删除用户
-func (us *UserService) DeleteById(userId uint64) error {
-	err := model.DeleteById(userId)
+func (us *UserService) DeleteByID(userID uint64) error {
+	err := model.DeleteByID(userID)
 	if err != nil {
 		return err
 	}

@@ -35,9 +35,9 @@ func AddUser(user *User) error {
 }
 
 //查询单个的用户
-func QueryUserById(userId uint64) (*User, error) {
+func QueryUserByID(userID uint64) (*User, error) {
 	user := User{}
-	err := DB.Table("users").Select("users.id,users.name,users.role_id").Where("id= ?", userId).Find(&user).Error
+	err := DB.Table("users").Select("users.id,users.name,users.role_id").Where("id= ?", userID).Find(&user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -49,18 +49,33 @@ func QueryUserById(userId uint64) (*User, error) {
 }
 
 //修改用户
-func UPdateById(userId uint64, data *User) error {
-	err := DB.Model(data).Omit("role_id").Where("id=?", userId).Updates(data).Error
+func UpdateByID(userID uint64, data *User) error {
+	err := DB.Model(data).Omit("role_id,password").Where("id=?", userID).Updates(data).Error
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
+// 修改用户密码
+func ChangePassword(userID uint64, data *User) bool {
+	user := User{}
+	newPwd, err := bcrypt.GenerateFromPassword([]byte(data.Password), 10)
+	if err != nil {
+		return false
+	}
+	data.Password = string(newPwd)
+	err = DB.Model(&user).Select("password").Where("id=?", userID).Updates(data).Error
+	if err != nil {
+		return false
+	}
+	return true
+}
+
 // 删除用户
-func DeleteById(userId uint64) error {
+func DeleteByID(userID uint64) error {
 	var user = User{}
-	err := DB.Where("id=?", userId).Delete(&user).Error
+	err := DB.Where("id=?", userID).Delete(&user).Error
 	if err != nil {
 		return err
 	}

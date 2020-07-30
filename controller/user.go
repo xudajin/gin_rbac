@@ -39,13 +39,14 @@ func AddUser(c *gin.Context) {
 	}
 	if err = us.Add(&data); err != nil {
 		util.Response(c, http.StatusBadRequest, 400, "创建用户错误", "")
+		return
 	}
 	util.Response(c, http.StatusOK, 201, "创建成功", "")
 
 }
 
 // 查询用户
-func QueryUserById(c *gin.Context) {
+func QueryUser(c *gin.Context) {
 	userID, err := strconv.ParseUint(c.Param("user_id"), 10, 64)
 	if err != nil {
 		util.Response(c, http.StatusBadRequest, 400, "参数错误", "")
@@ -62,10 +63,11 @@ func QueryUserById(c *gin.Context) {
 }
 
 // 修改用户
-func UpdateById(c *gin.Context) {
+func UpdateUser(c *gin.Context) {
 	userID, err := strconv.ParseUint(c.Param("user_id"), 10, 64)
 	if err != nil {
 		util.Response(c, http.StatusBadRequest, 400, "参数错误", "")
+		return
 	}
 	data := model.User{}
 	if err := c.BindJSON(&data); err != nil {
@@ -92,15 +94,43 @@ func UpdateById(c *gin.Context) {
 	util.Response(c, http.StatusOK, 200, "修改用户成功", "")
 }
 
+// 修改用户密码
+func ChangePassword(c *gin.Context) {
+	userID, err := strconv.ParseUint(c.Param("user_id"), 10, 64)
+	if err != nil {
+		util.Response(c, http.StatusBadRequest, 400, "参数错误", "")
+		return
+	}
+	data := model.User{}
+	if err := c.BindJSON(&data); err != nil {
+		util.Response(c, http.StatusBadRequest, 400, "参数错误", "")
+		return
+	}
+	valid := validation.Validation{}
+	valid.Required(data.Password, "password").Message("密码必须填")
+	valid.MinSize(data.Password, 6, "password").Message("密码不能小于6位数")
+	if valid.HasErrors() {
+		util.Response(c, http.StatusBadRequest, 400, valid.Errors[0].Message, "")
+		return
+	}
+	us := service.UserService{}
+	if !(us.ChangePassword(userID, &data)) {
+		util.Response(c, http.StatusBadRequest, 400, "修改密码错误", "")
+		return
+	}
+	util.Response(c, http.StatusOK, 200, "修改密码成功", "")
+
+}
+
 // 删除用户
-func DeleteById(c *gin.Context) {
+func DeleteUser(c *gin.Context) {
 	userID, err := strconv.ParseUint(c.Param("user_id"), 10, 64)
 	if err != nil {
 		util.Response(c, http.StatusBadRequest, 400, "参数错误", "")
 		return
 	}
 	us := service.UserService{}
-	if err := us.DeleteById(userID); err != nil {
+	if err := us.DeleteByID(userID); err != nil {
 		util.Response(c, http.StatusBadRequest, 400, "删除用户错误", "")
 	}
 
