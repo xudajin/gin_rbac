@@ -43,7 +43,7 @@ func Permission() gin.HandlerFunc {
 			c.Next()
 		} else {
 			util.Response(c, http.StatusForbidden, 403, "没有访问权限", "")
-			c.Abort()
+			c.Abort() // 终止访问
 			return
 		}
 	}

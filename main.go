@@ -14,11 +14,8 @@ func main() {
 	// 根路由
 	route := gin.Default()
 	route.POST("/login", controller.LoginController)
-	// app路由
-	router.UserRouter(route)
-	router.PermissionRouter(route)
-	router.RoleRouter(route)
-	// 用户模块路由
+	//后台管理路由
+	router.AdminRouter(route)
 	fmt.Println(model.DB)
 
 	route.Run(":8080")
