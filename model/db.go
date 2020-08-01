@@ -20,9 +20,9 @@ func init() {
 		log.Fatal("数据库连接错误", err)
 	}
 	db.LogMode(true)
-	db.DB().SetMaxIdleConns(10)
+	db.DB().SetMaxIdleConns(20)
 	db.DB().SetMaxOpenConns(100)
-	db.DB().SetConnMaxLifetime(time.Hour)
+	db.DB().SetConnMaxLifetime(time.Second * 30)
 	// 赋值成全局变量
 	DB = db
 

@@ -14,5 +14,6 @@ func PermissionRouter(r *gin.Engine) {
 		permissionRouter.GET("/infos", controller.PermissionList)
 		permissionRouter.POST("/infos", controller.AddPermission)
 		permissionRouter.PUT("/info/:permission_id", controller.UpdatePermission)
+		permissionRouter.DELETE("/info/:permission_id", controller.DeletePermission)
 	}
 }

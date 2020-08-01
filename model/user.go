@@ -8,7 +8,7 @@ import (
 type User struct {
 	BaseModel
 	Name     string `grom:"not null" json:"name"`
-	Password string `gorm:"not null" json:"password"`
+	Password string `gorm:"not null" json:"password,omitempty"`
 	RoleID   uint64 `json:"role_id"`
 }
 
@@ -32,6 +32,16 @@ func AddUser(user *User) error {
 		return err
 	}
 	return nil
+}
+
+// 查询用户列表
+func QueryUserList(pageNum uint64) (*[]User, error) {
+	userList := []User{}
+	err := DB.Select("id,name,role_id").Offset((pageNum - 1) * 5).Limit(5).Find(&userList).Error
+	if err != nil {
+		return &userList, err
+	}
+	return &userList, nil
 }
 
 //查询单个的用户

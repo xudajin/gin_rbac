@@ -10,10 +10,10 @@ import (
 )
 
 func main() {
+	gin.SetMode(gin.DebugMode) // 设置gin的模式运行，默认Debug
 	// 根路由
 	route := gin.Default()
 	route.POST("/login", controller.LoginController)
-
 	// app路由
 	router.UserRouter(route)
 	router.PermissionRouter(route)

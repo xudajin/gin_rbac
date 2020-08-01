@@ -14,6 +14,9 @@ func RoleRouter(r *gin.Engine) {
 		roleRouter.POST("/infos", controller.AddRole)
 		roleRouter.PUT("/info/:role_id", controller.UpdateRole)
 		roleRouter.DELETE("/info/:role_id", controller.DeleteRole)
+		roleRouter.GET("/permissions/:role_id", controller.QueryPermissionByRoleID)
 		roleRouter.POST("/permissions/:role_id", controller.RoleAddPermission)
+		roleRouter.PUT("/permissions/:role_id", controller.RoleUpdatePermission)
+
 	}
 }

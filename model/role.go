@@ -1,7 +1,5 @@
 package model
 
-import "fmt"
-
 type Role struct {
 	BaseModel
 	Name        string        `gorm:"unique;not null"`
@@ -40,7 +38,8 @@ func QueryRoles() ([]*Role, error) {
 
 // 修改角色
 func UpdateRole(roleID uint64, data *Role) error {
-	if err := DB.Model(data).Select("name").Where("id=?", roleID).Update(data).Error; err != nil {
+	role := Role{}
+	if err := DB.Model(&role).Select("name").Where("id=?", roleID).Update(data).Error; err != nil {
 		return err
 	}
 	return nil
@@ -75,6 +74,29 @@ func RoleAddPermission(roleID uint64, permissionsID []uint64) bool {
 	return true
 }
 
+// 修改关联权限
+func RoleUpdatePermission(roleID uint64, permissionsID []uint64) bool {
+	role := Role{}
+	err := DB.Where("id=?", roleID).Find(&role).Error
+	if err != nil {
+		return false
+	}
+	// 接收查询到的权限对象
+	permissions := make([]*Permission, 10)
+	wrong := DB.Where("id in (?)", permissionsID).Find(&permissions).Error
+	if wrong != nil {
+		return false
+	}
+	// 清除关联的权限
+	DB.Model(&role).Association("permissions").Clear()
+	// 重新添加权限关联
+	linkErr := DB.Model(&role).Association("permissions").Append(&permissions).Error
+	if linkErr != nil {
+		return false
+	}
+	return true
+}
+
 // 通过用户名称查权限
 func QueryPermissionByUserName(name string) (*Role, error) {
 	role := Role{}
@@ -84,9 +106,25 @@ func QueryPermissionByUserName(name string) (*Role, error) {
 		return nil, err
 	}
 	// 关联查询权限信息，并赋值给role对象
+	// 当查询role时，预加载role关联的 Permission的信息
 	err = DB.Preload("Permissions").Find(&role).Error
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 	return &role, nil
+}
+
+// 通过角色id获取权限
+func QueryPermissionsByRoleID(roleID uint64) (*Role, bool) {
+	role := Role{}
+	err := DB.Select("id,name").Find(&role).Error
+	if err != nil {
+		return nil, false
+	}
+	err = DB.Preload("Permissions").Find(&role).Error
+	if err != nil {
+		return nil, false
+	}
+	return &role, true
+
 }

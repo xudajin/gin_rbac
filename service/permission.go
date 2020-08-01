@@ -22,8 +22,8 @@ func (ps *PermissionService) Check(name string) (bool, error) {
 }
 
 // 获取权限列表
-func (ps *PermissionService) List() interface{} {
-	list, ok := model.PermissionList()
+func (ps *PermissionService) List(pageNum uint64) interface{} {
+	list, ok := model.PermissionList(pageNum)
 	if !ok {
 		return nil
 	}
@@ -45,4 +45,12 @@ func (ps *PermissionService) Update(id uint64, data *model.Permission) bool {
 	}
 	return true
 
+}
+
+// 删除权限
+func (ps *PermissionService) Delete(id uint64) bool {
+	if !(model.DeletePermission(id)) {
+		return false
+	}
+	return true
 }

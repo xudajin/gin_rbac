@@ -8,5 +8,4 @@ func Response(c *gin.Context, status int, code int64, msg string, data interface
 		"msg":  msg,
 		"data": data,
 	})
-	return
 }

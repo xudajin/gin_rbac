@@ -42,6 +42,4 @@ func LoginController(c *gin.Context) {
 		return
 	}
 	util.Response(c, http.StatusBadRequest, 400, "用户不存在", "")
-	return
-
 }

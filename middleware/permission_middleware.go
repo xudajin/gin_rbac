@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// 权限验证中间件
 func Permission() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		requestMethod := c.Request.Method // 获取当前请求方法
@@ -32,10 +33,10 @@ func Permission() gin.HandlerFunc {
 				if permission.Path == requestURL {
 					if permission.Method == requestMethod {
 						allowRequest = true
+						break //有访问权限时，跳出循环
 					}
 				}
 			}
-
 		}
 		// 判断是否允许访问
 		if allowRequest {

@@ -45,7 +45,7 @@ func AddUser(c *gin.Context) {
 
 }
 
-// 查询用户
+// 查询单个用户
 func QueryUser(c *gin.Context) {
 	userID, err := strconv.ParseUint(c.Param("user_id"), 10, 64)
 	if err != nil {
@@ -59,7 +59,18 @@ func QueryUser(c *gin.Context) {
 		return
 	}
 	util.Response(c, http.StatusOK, 200, "查询成功", data)
+}
 
+// 查询用户列表
+func QueryUserList(c *gin.Context) {
+	us := service.UserService{}
+	pageNum, err := strconv.ParseUint(c.DefaultQuery("page", "1"), 10, 64)
+	userList, err := us.QueryUserList(pageNum)
+	if err != nil {
+		util.Response(c, http.StatusBadRequest, 400, "查询错误", "")
+		return
+	}
+	util.Response(c, http.StatusOK, 200, "查询成功", userList)
 }
 
 // 修改用户
