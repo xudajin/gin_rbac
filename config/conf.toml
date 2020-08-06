@@ -1,0 +1,9 @@
+
+
+
+
+[database]
+name = "root"
+password = "root"
+database_type = "mysql"
+database_name = "go_web"

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	_ "go_web/config"
 	"go_web/controller"
 	"go_web/model"
 	"go_web/router"

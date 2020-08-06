@@ -33,7 +33,7 @@ func LoginController(c *gin.Context) {
 			return
 		}
 		// 签发Token
-		token, err := util.GenerateToken(user.ID, user.Name)
+		token, err := util.GenerateToken(user.ID, user.Name, user.RoleID)
 		if err != nil {
 			util.Response(c, http.StatusBadRequest, 400, "签发Token错误", "")
 			return

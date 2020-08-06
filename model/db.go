@@ -14,8 +14,11 @@ import (
 var DB *gorm.DB
 
 func init() {
-	args := fmt.Sprintf("%s:%s@/go_web?charset=utf8&parseTime=True&loc=Local", config.DbName, config.DbPassword)
-	db, err := gorm.Open("mysql", args)
+	args := fmt.Sprintf("%s:%s@/%s?charset=utf8&parseTime=True&loc=Local",
+		config.Set.DB.LoginName,
+		config.Set.DB.LoginPassword,
+		config.Set.DB.DatabaseName)
+	db, err := gorm.Open(config.Set.DB.Type, args)
 	if err != nil {
 		log.Fatal("数据库连接错误", err)
 	}
