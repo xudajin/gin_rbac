@@ -1,9 +1,18 @@
 package model
 
+import "go_web/serializer"
+
 type Role struct {
 	BaseModel
-	Name        string        `gorm:"unique;not null"`
-	Permissions []*Permission `gorm:"many2many:role_permission" json:"permission"`
+	Name   string `gorm:"unique;not null"`
+	Status uint64 `grom:"default(1)" json:"status"`
+}
+
+// 角色关联权限表
+type RolePermission struct {
+	ID           uint   `gorm:"primary_key" json:"id"`
+	RoleID       uint64 `gorm:"not null" json:"role_id"`
+	PermissionID uint64 `gorm:"not null" json:"permission_id"`
 }
 
 // 通过姓名查询角色是否存在
@@ -27,7 +36,7 @@ func AddRole(role *Role) error {
 	return nil
 }
 
-// 查询角色
+// 查询角色列表
 func QueryRoles() ([]*Role, error) {
 	roleList := make([]*Role, 10)
 	if err := DB.Select("id,name").Find(&roleList).Error; err != nil {
@@ -61,23 +70,9 @@ func RoleAddPermission(roleID uint64, permissionsID []uint64) bool {
 	if err != nil {
 		return false
 	}
-	// 接收查询到的权限对象
-	permissions := make([]*Permission, 10)
-	wrong := DB.Where("id in (?)", permissionsID).Find(&permissions).Error
-	if wrong != nil {
-		return false
-	}
-	linkErr := DB.Model(&role).Association("permissions").Append(&permissions).Error
-	if linkErr != nil {
-		return false
-	}
-	return true
-}
-
-// 修改关联权限
-func RoleUpdatePermission(roleID uint64, permissionsID []uint64) bool {
-	role := Role{}
-	err := DB.Where("id=?", roleID).Find(&role).Error
+	// 清空角色关联的权限
+	rolePermission := RolePermission{}
+	err = DB.Where("role_id=?", role.ID).Delete(&rolePermission).Error
 	if err != nil {
 		return false
 	}
@@ -87,44 +82,37 @@ func RoleUpdatePermission(roleID uint64, permissionsID []uint64) bool {
 	if wrong != nil {
 		return false
 	}
-	// 清除关联的权限
-	DB.Model(&role).Association("permissions").Clear()
-	// 重新添加权限关联
-	linkErr := DB.Model(&role).Association("permissions").Append(&permissions).Error
-	if linkErr != nil {
-		return false
+	for _, v := range permissions {
+		//查询一条记录，若查询不到，则创建记录 FirstOrCreate
+		err = DB.Where(&RolePermission{RoleID: uint64(role.ID), PermissionID: uint64(v.ID)}).FirstOrCreate(&RolePermission{RoleID: uint64(role.ID), PermissionID: uint64(v.ID)}).Error
+		if err != nil {
+			return false
+		}
 	}
 	return true
-}
-
-// 通过用户名称查权限
-func QueryPermissionByUserName(name string) (*Role, error) {
-	role := Role{}
-	// 获取用户关联角色
-	err := DB.Table("users").Select("roles.id,roles.name").Joins("left join roles on roles.id = users.role_id").Where("users.name=?", name).Find(&role).Error
-	if err != nil {
-		return nil, err
-	}
-	// 关联查询权限信息，并赋值给role对象
-	// 当查询role时，预加载role关联的 Permission的信息
-	err = DB.Preload("Permissions").Find(&role).Error
-	if err != nil {
-		return nil, err
-	}
-	return &role, nil
 }
 
 // 通过角色id获取权限
-func QueryPermissionsByRoleID(roleID uint64) (*Role, bool) {
+func QueryPermissionsByRoleID(roleID uint64) ([]*serializer.TreePermission, bool) {
 	role := Role{}
-	err := DB.Select("id,name").Find(&role).Error
+	err := DB.Select("id,name").Where("id=?", roleID).Find(&role).Error
 	if err != nil {
 		return nil, false
 	}
-	err = DB.Preload("Permissions").Find(&role).Error
+	PermissionIDList := []*RolePermission{}
+	err = DB.Select("permission_id").Where("role_id=?", role.ID).Find(&PermissionIDList).Error
 	if err != nil {
 		return nil, false
 	}
-	return &role, true
-
+	IDList := []uint64{}
+	for _, v := range PermissionIDList {
+		IDList = append(IDList, v.PermissionID)
+	}
+	permissionList := []*serializer.TreePermission{}
+	// 原生sql join 查询
+	err = DB.Table("permissions").Select("id,name,path,method,category,parent_id").Where("id in (?) AND deleted_at is null", IDList).Scan(&permissionList).Error
+	if err != nil {
+		return permissionList, false
+	}
+	return permissionList, true
 }

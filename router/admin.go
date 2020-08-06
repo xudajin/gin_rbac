@@ -12,18 +12,10 @@ func AdminRouter(r *gin.Engine) {
 	// 用户路由
 	{
 		adminRouter.GET("/users", controller.QueryUserList)
-		adminRouter.GET("/user/user_id", controller.QueryUser)
 		adminRouter.POST("/users", controller.AddUser)
 		adminRouter.PUT("/user/:user_id", controller.UpdateUser)
 		adminRouter.PUT("/password/:user_id", controller.ChangePassword)
 		adminRouter.DELETE("/user/:user_id", controller.DeleteUser)
-	}
-	// 权限路由
-	{
-		adminRouter.GET("/permissions", controller.PermissionList)
-		adminRouter.POST("/permissions", controller.AddPermission)
-		adminRouter.PUT("/permission/:permission_id", controller.UpdatePermission)
-		adminRouter.DELETE("/permission/:permission_id", controller.DeletePermission)
 	}
 	// 角色路由
 	{
@@ -33,7 +25,12 @@ func AdminRouter(r *gin.Engine) {
 		adminRouter.DELETE("/roles/:role_id", controller.DeleteRole)
 		adminRouter.GET("role/permissions/:role_id", controller.QueryPermissionByRoleID)
 		adminRouter.POST("role/permissions/:role_id", controller.RoleAddPermission)
-		adminRouter.PUT("role/permissions/:role_id", controller.RoleUpdatePermission)
-
+	}
+	// 权限路由
+	{
+		adminRouter.GET("/permissions", controller.PermissionList)
+		adminRouter.POST("/permissions", controller.AddPermission)
+		adminRouter.PUT("/permission/:permission_id", controller.UpdatePermission)
+		adminRouter.DELETE("/permission/:permission_id", controller.DeletePermission)
 	}
 }

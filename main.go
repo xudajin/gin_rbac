@@ -13,7 +13,7 @@ func main() {
 	gin.SetMode(gin.DebugMode) // 设置gin的模式运行，默认Debug
 	// 根路由
 	route := gin.Default()
-	route.POST("/login", controller.LoginController)
+	route.POST("admin/login", controller.LoginController)
 	//后台管理路由
 	router.AdminRouter(route)
 	fmt.Println(model.DB)

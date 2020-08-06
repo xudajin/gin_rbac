@@ -28,5 +28,5 @@ func init() {
 
 	fmt.Println("连接成功")
 	// 自动迁移数据库
-	DB.AutoMigrate(&User{}, &Role{}, &Permission{})
+	DB.AutoMigrate(&User{}, &Role{}, &Permission{}, &RolePermission{})
 }

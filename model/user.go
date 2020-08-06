@@ -44,20 +44,6 @@ func QueryUserList(pageNum uint64) (*[]User, error) {
 	return &userList, nil
 }
 
-//查询单个的用户
-func QueryUserByID(userID uint64) (*User, error) {
-	user := User{}
-	err := DB.Table("users").Select("users.id,users.name,users.role_id").Where("id= ?", userID).Find(&user).Error
-	if err != nil {
-		return nil, err
-	}
-	if user.ID > 0 {
-
-		return &user, nil
-	}
-	return nil, nil
-}
-
 //修改用户
 func UpdateByID(userID uint64, data *User) error {
 	err := DB.Model(data).Omit("role_id,password").Where("id=?", userID).Updates(data).Error

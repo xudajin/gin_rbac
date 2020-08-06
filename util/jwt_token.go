@@ -10,14 +10,16 @@ import (
 var jwtSecret = []byte(config.JwtKey)
 
 type Claims struct {
+	UserID   uint   `json:"id"`
 	Username string `json:"username" `
 	jwt.StandardClaims
 }
 
-func GenerateToken(username string) (string, error) {
+func GenerateToken(id uint, username string) (string, error) {
 	nowTime := time.Now()
 	expireTime := nowTime.Add(3 * time.Hour)
 	claims := Claims{
+		id,
 		username,
 		jwt.StandardClaims{
 			ExpiresAt: expireTime.Unix(),

@@ -29,15 +29,6 @@ func (us *UserService) Add(user *model.User) error {
 	return nil
 }
 
-// 查询单个用户
-func (us *UserService) QueryByID(userID uint64) (*model.User, error) {
-	data, err := model.QueryUserByID(userID)
-	if err != nil {
-		return nil, err
-	}
-	return data, nil
-}
-
 //查询用户列表
 func (us *UserService) QueryUserList(pageNum uint64) (*[]model.User, error) {
 	userList, err := model.QueryUserList(pageNum)

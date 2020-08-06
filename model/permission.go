@@ -2,15 +2,13 @@ package model
 
 type Permission struct {
 	BaseModel
-	Name            string        `gorm:"not null;unique" json:"name"`
-	Path            string        `json:"path"`
-	Method          string        `json:"method"`
-	Code            string        `gorm:"not null;unique" json:"code"`
-	ParentID        uint64        `json:"parent_id"`
-	Remark          string        `json:"remark"`
-	Category        string        `json:"category"`
-	ChildPermission []*Permission `gorm:"foreignkey:ParentID" json:"child_permission"`
-	Roles           []*Role       `gorm:"many2many:role_permission" json:"role,omitempty"` // 当字段为空，忽略该字段
+	Name     string `gorm:"not null;unique" json:"name"`
+	Path     string `json:"path"`
+	Method   string `json:"method"`
+	Code     string `gorm:"not null;unique" json:"code"`
+	ParentID uint64 `json:"parent_id"`
+	Remark   string `json:"remark"`
+	Category string `json:"category"`
 }
 
 // 查看权限名是否存在

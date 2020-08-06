@@ -1,8 +1,8 @@
 package service
 
 import (
-	"fmt"
 	"go_web/model"
+	"go_web/serializer"
 
 	"github.com/jinzhu/gorm"
 )
@@ -10,7 +10,7 @@ import (
 type RoleService struct {
 }
 
-// 检查权限是否重复
+// 检查权限是否存在
 func (rs *RoleService) Check(name string) (bool, error) {
 	isExist, err := model.IsExistRoleByName(name)
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -65,26 +65,18 @@ func (rs *RoleService) RoleAddPermission(roleID uint64, permissionsID []uint64) 
 	return true
 }
 
-// 修改角色关联权限
-func (rs *RoleService) RoleUpdatePermission(roleID uint64, PermissionID []uint64) bool {
-	if !model.RoleUpdatePermission(roleID, PermissionID) {
-		return false
-	}
-	return true
-}
-
 // 通过角色id获取拥有权限
-func (rs *RoleService) GetRolePermissionByID(roleID uint64) ([]*model.Permission, bool) {
-	role, ok := model.QueryPermissionsByRoleID(roleID)
+func (rs *RoleService) GetRolePermissionByID(roleID uint64) ([]*serializer.TreePermission, bool) {
+	TreePermissionList, ok := model.QueryPermissionsByRoleID(roleID)
 	if !ok {
 		return nil, false
 	}
 	// 对查询数据进行结构化处理.形成树状结构
-	permissionList := []*model.Permission{}
-	for _, permission := range role.Permissions {
-		for _, cpermission := range role.Permissions {
+	permissionList := []*serializer.TreePermission{}
+	for _, permission := range TreePermissionList {
+		for _, cpermission := range TreePermissionList {
 			if uint64(permission.ID) == cpermission.ParentID {
-				permission.ChildPermission = append(permission.ChildPermission, cpermission)
+				permission.Childen = append(permission.Childen, cpermission)
 			}
 		}
 		// 让该权限是root权限时，才添加入权限列表
@@ -92,7 +84,5 @@ func (rs *RoleService) GetRolePermissionByID(roleID uint64) ([]*model.Permission
 			permissionList = append(permissionList, permission)
 		}
 	}
-	fmt.Println(permissionList)
 	return permissionList, true
-
 }

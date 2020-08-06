@@ -45,22 +45,6 @@ func AddUser(c *gin.Context) {
 
 }
 
-// 查询单个用户
-func QueryUser(c *gin.Context) {
-	userID, err := strconv.ParseUint(c.Param("user_id"), 10, 64)
-	if err != nil {
-		util.Response(c, http.StatusBadRequest, 400, "参数错误", "")
-		return
-	}
-	us := service.UserService{}
-	data, err := us.QueryByID(userID)
-	if err != nil {
-		util.Response(c, http.StatusBadRequest, 400, "查询错误", "")
-		return
-	}
-	util.Response(c, http.StatusOK, 200, "查询成功", data)
-}
-
 // 查询用户列表
 func QueryUserList(c *gin.Context) {
 	us := service.UserService{}

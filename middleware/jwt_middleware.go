@@ -25,6 +25,8 @@ func Jwt() gin.HandlerFunc {
 		if tokenClaims != nil {
 			// 以k-v 形式存储信息
 			c.Set("username", tokenClaims.Username)
+			c.Set("user_id", tokenClaims.UserID)
+
 			c.Next()
 		}
 	}

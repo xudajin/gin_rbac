@@ -10,8 +10,8 @@ import (
 )
 
 type Login struct {
-	Name     string
-	Password string
+	Name     string `json:"name"`
+	Password string `json:"password"`
 }
 
 func LoginController(c *gin.Context) {
@@ -33,7 +33,7 @@ func LoginController(c *gin.Context) {
 			return
 		}
 		// 签发Token
-		token, err := util.GenerateToken(user.Name)
+		token, err := util.GenerateToken(user.ID, user.Name)
 		if err != nil {
 			util.Response(c, http.StatusBadRequest, 400, "签发Token错误", "")
 			return

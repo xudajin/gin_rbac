@@ -108,6 +108,10 @@ func RoleAddPermission(c *gin.Context) {
 	}
 	// 读取post.body中的数据
 	body, _ := ioutil.ReadAll(c.Request.Body)
+	if len(body) == 0 {
+		util.Response(c, http.StatusBadRequest, 400, "请传入权限参数", "")
+		return
+	}
 	// 定义map接收
 	var permissionID map[string][]uint64
 	//将body的数据转成json,并赋值给 permissionID
@@ -119,28 +123,6 @@ func RoleAddPermission(c *gin.Context) {
 		return
 	}
 	util.Response(c, http.StatusOK, 200, "角色权限关联成功", "")
-}
-
-// 修改角色权限
-func RoleUpdatePermission(c *gin.Context) {
-	roleID, err := strconv.ParseUint(c.Param("role_id"), 10, 64)
-	if err != nil {
-		util.Response(c, http.StatusBadRequest, 400, "参数错误", "")
-		return
-	}
-	// 读取post.body中的数据
-	body, _ := ioutil.ReadAll(c.Request.Body)
-	// 定义map接收
-	var permissionID map[string][]uint64
-	//将body的数据转成json,并赋值给 permissionID
-	json.Unmarshal(body, &permissionID)
-
-	rs := service.RoleService{}
-	if !(rs.RoleUpdatePermission(roleID, permissionID["permission_id"])) {
-		util.Response(c, http.StatusBadRequest, 400, "角色权限关联错误", "")
-		return
-	}
-	util.Response(c, http.StatusOK, 200, "修改角色权限成功", "")
 }
 
 // 通过角色id获取权限
