@@ -128,5 +128,4 @@ func DeleteUser(c *gin.Context) {
 	if err := us.DeleteByID(userID); err != nil {
 		util.Response(c, http.StatusBadRequest, 400, "删除用户错误", "")
 	}
-
 }

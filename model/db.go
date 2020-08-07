@@ -28,8 +28,12 @@ func init() {
 	db.DB().SetConnMaxLifetime(time.Second * 30)
 	// 赋值成全局变量
 	DB = db
-
 	fmt.Println("连接成功")
 	// 自动迁移数据库
-	DB.AutoMigrate(&User{}, &Role{}, &Permission{}, &RolePermission{})
+	DB.AutoMigrate(
+		&User{},
+		&Role{},
+		&Permission{},
+		&RolePermission{},
+	)
 }

@@ -23,9 +23,8 @@ func Jwt() gin.HandlerFunc {
 			return
 		}
 		if tokenClaims != nil {
-			// 以k-v 形式存储信息
+			// 以k-v 形式存储信息,保存用户信息到上下文中
 			c.Set("user_info", tokenClaims)
-
 			c.Next()
 		}
 	}

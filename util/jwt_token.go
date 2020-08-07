@@ -7,7 +7,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-var jwtSecret = []byte(config.JwtKey)
+var jwtSecret = []byte(config.Set.JwtKey)
 
 type Claims struct {
 	UserID   uint   `json:"id"`

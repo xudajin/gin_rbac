@@ -1,5 +1,7 @@
 
-
+[default]
+mode = "debug"
+jwt_key = "djhjekagfg244785sdfas2"
 
 
 [database]

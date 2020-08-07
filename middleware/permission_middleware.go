@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"go_web/model"
 	"go_web/util"
 	"net/http"
@@ -32,7 +31,6 @@ func Permission() gin.HandlerFunc {
 		if info.Username == "admin" {
 			allowRequest = true
 		} else {
-			fmt.Println(11111, info.RoleID)
 			permissionList, ok := model.QueryPermissionsByRoleID(uint64(info.RoleID)) //类型断言
 			if !ok {
 				util.Response(c, http.StatusForbidden, 403, "没有访问权限", "")

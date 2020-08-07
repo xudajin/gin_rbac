@@ -134,10 +134,11 @@ func QueryPermissionByRoleID(c *gin.Context) {
 	}
 	rs := service.RoleService{}
 	permissionList, ok := rs.GetRolePermissionByID(roleID)
+	count := len(permissionList) // 获取返回数据个数
 	if !ok {
 		util.Response(c, http.StatusBadRequest, 400, "查询角色权限错误", "")
 		return
 	}
-	util.Response(c, http.StatusOK, 200, "查询角色权限成功", permissionList)
+	util.ListResponse(c, http.StatusOK, 200, "查询角色权限成功", count, permissionList)
 
 }
