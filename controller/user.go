@@ -114,7 +114,6 @@ func ChangePassword(c *gin.Context) {
 		return
 	}
 	util.Response(c, http.StatusOK, 200, "修改密码成功", "")
-
 }
 
 // 删除用户

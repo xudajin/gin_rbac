@@ -47,9 +47,7 @@ func Permission() gin.HandlerFunc {
 			}
 		}
 		// 判断是否允许访问
-		if allowRequest {
-			c.Next()
-		} else {
+		if !allowRequest {
 			util.Response(c, http.StatusForbidden, 403, "没有访问权限", "")
 			c.Abort() // 终止访问
 			return
