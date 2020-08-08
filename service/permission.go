@@ -22,7 +22,7 @@ func (ps *PermissionService) Check(name string) (bool, error) {
 }
 
 // 获取权限列表
-func (ps *PermissionService) List(pageNum uint64) interface{} {
+func (ps *PermissionService) List(pageNum uint64) []*model.Permission {
 	list, ok := model.PermissionList(pageNum)
 	if !ok {
 		return nil

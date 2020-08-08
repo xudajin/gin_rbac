@@ -30,7 +30,7 @@ func (us *UserService) Add(user *model.User) error {
 }
 
 //查询用户列表
-func (us *UserService) QueryUserList(pageNum uint64) (*[]model.User, error) {
+func (us *UserService) QueryUserList(pageNum uint64) ([]*model.User, error) {
 	userList, err := model.QueryUserList(pageNum)
 	if err != nil {
 		return nil, err

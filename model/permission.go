@@ -25,12 +25,12 @@ func IsExistPermissionByName(name string) (bool, error) {
 }
 
 // 获取权限列表
-func PermissionList(pageNum uint64) (*[]Permission, bool) {
-	permissionList := []Permission{}
+func PermissionList(pageNum uint64) ([]*Permission, bool) {
+	permissionList := []*Permission{}
 	if err := DB.Offset((pageNum - 1) * 5).Limit(5).Find(&permissionList).Error; err != nil {
-		return &permissionList, false
+		return permissionList, false
 	}
-	return &permissionList, true
+	return permissionList, true
 }
 
 // 添加权限

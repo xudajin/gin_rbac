@@ -35,13 +35,13 @@ func AddUser(user *User) error {
 }
 
 // 查询用户列表
-func QueryUserList(pageNum uint64) (*[]User, error) {
-	userList := []User{}
+func QueryUserList(pageNum uint64) ([]*User, error) {
+	userList := []*User{}
 	err := DB.Select("id,name,role_id").Offset((pageNum - 1) * 5).Limit(5).Find(&userList).Error
 	if err != nil {
-		return &userList, err
+		return userList, err
 	}
-	return &userList, nil
+	return userList, nil
 }
 
 //修改用户
